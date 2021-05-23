@@ -4478,6 +4478,11 @@ make_instruction:
 				yylval->builtin_idx = mid;
 			break;
 		}
+		if (strcmp(tokstart, "delete") == 0) {
+			static int counter = 0;
+			if (++counter == 4)
+				stopme(NULL);
+		}
 		return lasttok = class;
 	}
 out:
