@@ -4481,7 +4481,7 @@ make_instruction:
 		if (strcmp(tokstart, "delete") == 0) {
 			static int counter = 0;
 			if (++counter == 4)
-				stopme(NULL);
+				stopme(0);
 		}
 		return lasttok = class;
 	}
