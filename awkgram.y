@@ -66,6 +66,7 @@ static INSTRUCTION *outer_comment;
 static INSTRUCTION *interblock_comment;
 static INSTRUCTION *pending_comment;
 static INSTRUCTION *namespace_chain;
+bool trace = false;
 
 #ifdef DEBUG_COMMENTS
 static void
@@ -1230,6 +1231,8 @@ regular_print:
 	| LEX_DELETE NAME { sub_counter = 0; } delete_subscript_list
 	  {
 		char *arr = $2->lextok;
+
+		if (trace) fprintf(stderr, "tok: %#p, val: %#p, %s\n", (void*) $2, arr, arr);
 
 		$2->opcode = Op_push_array;
 		$2->memory = variable($2->source_line, arr, Node_var_new);
@@ -3574,7 +3577,6 @@ yylex(void)
 	AWKNUM d;
 	bool collecting_typed_regexp = false;
 	static int qm_col_count = 0;
-	static bool trace = false;
 
 #define GET_INSTRUCTION(op) bcalloc(op, 1, sourceline)
 
@@ -3883,12 +3885,12 @@ retry:
 		if (++in_braces == 1)
 			firstline = sourceline;
 	case ';':
-		trace = false;
+		// trace = false;
 		/* fall through */
 	case ',':
 	case '[':
-			if (trace) fprintf(stderr, "return '%c'\n", c);
-			return lasttok = c;
+		if (trace) fprintf(stderr, "return '%c'\n", c);
+		return lasttok = c;
 	case ']':
 		c = nextc(true);
 		pushback();
@@ -4595,6 +4597,8 @@ out:
 			goto_warned = true;
 			lintwarn(_("`goto' considered harmful!"));
 		}
+		if (trace) fprintf(stderr, "returning NAME %#p, %#p\n", yylval,
+					yylval->lextok);
 		return lasttok = NAME;
 	}
 
@@ -5336,14 +5340,20 @@ variable(int location, char *name, NODETYPE type)
 {
 	NODE *r;
 
+	if (trace) fprintf(stderr, "variable(%d, %s, %s)\n", location, name,
+			nodetype2str(type));
+
 	if ((r = lookup(name)) != NULL) {
 		if (r->type == Node_func || r->type == Node_ext_func )
 			error_ln(location, _("function `%s' called with space between name and `(',\nor used as a variable or an array"),
 				r->vname);
 	} else {
 		/* not found */
-		return install_symbol(name, type);
+		NODE *ret = install_symbol(name, type);
+		if (trace) fprintf(stderr, "installing %s, returning %#p\n", name, ret);
+		return ret;
 	}
+	if (trace) fprintf(stderr, "found %s, returning %#p\n", name, r);
 	efree(name);
 	return r;
 }

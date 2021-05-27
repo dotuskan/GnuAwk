@@ -306,6 +306,8 @@ install(const char *name, NODE *parm, NODETYPE type)
 	NODE *table;
 	NODE *n_name;
 	NODE *prev;
+	extern bool trace;
+	const char *table_name = "symbol_table";
 
 	if (strncmp(name, "awk::", 5) == 0)
 		n_name = make_string(name + 5, strlen(name) - 5);
@@ -316,12 +318,15 @@ install(const char *name, NODE *parm, NODETYPE type)
 
 	if (type == Node_param_list) {
 		table = param_table;
+		table_name = "param_table";
 	} else if (   type == Node_func
 		   || type == Node_ext_func
 		   || type == Node_builtin_func) {
 		table = func_table;
+		table_name = "func_table";
 	} else if (installing_specials) {
 		table = global_table;
+		table_name = "global_table";
 	}
 
 	if (parm != NULL)
@@ -345,6 +350,8 @@ install(const char *name, NODE *parm, NODETYPE type)
 	} else {
 simple:
 		/* the simple case */
+		if (trace) fprintf(stderr, "installing %s in %s, type %s\n",
+				n_name->stptr, table_name, nodetype2str(r->type));
 		assoc_set(table, n_name, r);
 	}
 
