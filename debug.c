@@ -314,7 +314,7 @@ static struct list_item *add_item(struct list_item *list, int type, NODE *symbol
 static void delete_item(struct list_item *d);
 static int breakpoint_triggered(BREAKPOINT *b);
 static int watchpoint_triggered(struct list_item *w);
-static void print_instruction(INSTRUCTION *pc, Func_print print_func, FILE *fp, int in_dump);
+void print_instruction(INSTRUCTION *pc, Func_print print_func, FILE *fp, int in_dump);
 static void print_ns_list(INSTRUCTION *pc, Func_print print_func, FILE *fp, int in_dump);
 static int print_code(INSTRUCTION *pc, void *x);
 static void next_command();
@@ -3760,7 +3760,7 @@ print_memory(NODE *m, NODE *func, Func_print print_func, FILE *fp)
 
 /* print_instruction --- print a bytecode */
 
-static void
+void
 print_instruction(INSTRUCTION *pc, Func_print print_func, FILE *fp, int in_dump)
 {
 	int pcount = 0;

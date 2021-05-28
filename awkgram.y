@@ -1231,11 +1231,15 @@ regular_print:
 	| LEX_DELETE NAME { sub_counter = 0; } delete_subscript_list
 	  {
 		char *arr = $2->lextok;
+		extern void print_instruction(INSTRUCTION *pc, Func_print print_func, FILE *fp, int in_dump);
 
 		if (trace) fprintf(stderr, "tok: %#p, val: %#p, %s\n", (void*) $2, arr, arr);
 
 		$2->opcode = Op_push_array;
 		$2->memory = variable($2->source_line, arr, Node_var_new);
+		if (trace) print_instruction((INSTRUCTION *) $2,
+			fprintf, stderr, true);
+		if (trace) fprintf(stderr, "\t-- memory = %#p\n", $2->memory);
 
 		if (! do_posix && ! do_traditional) {
 			if ($2->memory == symbol_table)

@@ -226,6 +226,7 @@ pprint(INSTRUCTION *startp, INSTRUCTION *endp, int flags)
 	int rule;
 	static int rule_count[MAXRULE];
 	static bool skip_comment = false;
+	extern void print_instruction(INSTRUCTION *pc, Func_print print_func, FILE *fp, int in_dump);
 
 	for (pc = startp; pc != endp; pc = pc->nexti) {
 		if (pc->source_line > 0)
@@ -373,7 +374,8 @@ pprint(INSTRUCTION *startp, INSTRUCTION *endp, int flags)
 				break;
 
 			default:
-				fprintf(stderr, "Got unexpected type %s\n", nodetype2str(m->type));
+				fprintf(stderr, "Got unexpected type %s, memory = %#p\n", nodetype2str(m->type), pc->memory);
+				print_instruction(pc, fprintf, stderr, true);
 				cant_happen();
 			}
 
