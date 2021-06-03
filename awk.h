@@ -1227,6 +1227,8 @@ extern const char awk_namespace[];	/* "awk" */
 extern const char *current_namespace;
 extern bool namespace_changed;
 
+extern NODE *watched;
+
 /* ------------------------- Runtime stack -------------------------------- */
 
 typedef union stack_item {

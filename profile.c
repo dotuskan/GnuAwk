@@ -351,6 +351,8 @@ pprint(INSTRUCTION *startp, INSTRUCTION *endp, int flags)
 		case Op_push_lhs:
 		case Op_push_param:
 		case Op_push_array:
+			m = pc->memory;
+			fprintf(stderr, "in profile.c, ref_count = %d\n", pc->memory->valref);
 		case Op_push:
 		case Op_push_arg:
 		case Op_push_arg_untyped:
@@ -376,6 +378,8 @@ pprint(INSTRUCTION *startp, INSTRUCTION *endp, int flags)
 			default:
 				fprintf(stderr, "Got unexpected type %s, memory = %#p\n", nodetype2str(m->type), pc->memory);
 				print_instruction(pc, fprintf, stderr, true);
+				fprintf(stderr, "in profile.c, ref_count = %d\n", pc->memory->valref);
+
 				cant_happen();
 			}
 

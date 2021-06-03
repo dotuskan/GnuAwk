@@ -34,6 +34,8 @@
 #define signed /**/
 #endif
 
+NODE *watched = 0;
+
 static void yyerror(const char *m, ...) ATTRIBUTE_PRINTF_1;
 static void error_ln(int line, const char *m, ...) ATTRIBUTE_PRINTF_2;
 static void lintwarn_ln(int line, const char *m, ...) ATTRIBUTE_PRINTF_2;
@@ -1237,6 +1239,10 @@ regular_print:
 
 		$2->opcode = Op_push_array;
 		$2->memory = variable($2->source_line, arr, Node_var_new);
+		if (trace) {
+			watched = $2->memory;
+			fprintf(stderr, "ref_count = %d\n", watched->valref);
+		}
 		if (trace) print_instruction((INSTRUCTION *) $2,
 			fprintf, stderr, true);
 		if (trace) fprintf(stderr, "\t-- memory = %#p\n", $2->memory);
