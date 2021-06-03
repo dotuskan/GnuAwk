@@ -1265,13 +1265,14 @@ extern STACK_ITEM *stack_top;
  * When in doubt, use dupnode.
  */
 
-#define UPREF(r)	(void) ((r)->valref++)
+#define UPREF(r)	(void) ((watched && r == watched ? fprintf(stderr, "++ increment\n") : 0), (r)->valref++)
 
 extern void r_unref(NODE *tmp);
 
 static inline void
 DEREF(NODE *r)
 {
+	if (watched && r == watched) fprintf(stderr, "--decrement\n");
 	assert(r->valref > 0);
 #ifndef GAWKDEBUG
 	if (--r->valref > 0)
@@ -1891,6 +1892,7 @@ static inline NODE *
 dupnode(NODE *n)
 {
 	if ((n->flags & MALLOC) != 0) {
+		if (watched && n == watched) fprintf(stderr, "++ 2 increment\n");
 		n->valref++;
 		return n;
 	}
@@ -1938,6 +1940,7 @@ force_string_fmt(NODE *s, const char *fmtstr, int fmtidx)
 static inline void
 unref(NODE *r)
 {
+	if (watched && r == watched) fprintf(stderr, "-- 2 increment\n");
 	assert(r == NULL || r->valref > 0);
 	if (r != NULL && --r->valref <= 0)
 		r_unref(r);
