@@ -2057,6 +2057,7 @@ make_number_node(unsigned int flags)
 {
 	NODE *r;
 	getnode(r);
+	if (watched && r == watched) fprintf(stderr, "got %#p from getnode!\n");
 	memset(r, 0, sizeof(*r));
 	r->type = Node_val;
 	r->valref = 1;

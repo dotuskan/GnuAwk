@@ -355,7 +355,6 @@ pprint(INSTRUCTION *startp, INSTRUCTION *endp, int flags)
 		case Op_push_arg:
 		case Op_push_arg_untyped:
 			m = pc->memory;
-			if (watched && m == watched) fprintf(stderr, "in profile.c, ref_count = %d\n", pc->memory->valref);
 			switch (m->type) {
 			case Node_param_list:
 				pp_push(pc->opcode, func_params[m->param_cnt].param, DONT_FREE, pc->comment);

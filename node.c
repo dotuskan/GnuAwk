@@ -361,6 +361,8 @@ r_make_number(double x)
 {
 	NODE *r = make_number_node(0);
 	r->numbr = x;
+	if (watched && r == watched) fprintf(stderr, "clobbering %#p with %g\n",
+			watched, x);
 	return r;
 }
 
