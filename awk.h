@@ -1280,7 +1280,6 @@ extern void r_unref(NODE *tmp);
 static inline void
 DEREF_real(NODE *r, const char *file, int line, const char *func)
 {
-	if (watched && r == watched) fprintf(stderr, "--decrement\n");
 	if (watched && r == watched)
 		fprintf(stderr, "%s:%d:%s: decrement 1\n", file, line, func);
 	assert(r->valref > 0);
@@ -2072,7 +2071,8 @@ make_number_node(unsigned int flags)
 {
 	NODE *r;
 	getnode(r);
-	if (watched && r == watched) fprintf(stderr, "got %#p from getnode!\n");
+	if (watched && r == watched)
+		fprintf(stderr, "got %#p from getnode!\n");
 	memset(r, 0, sizeof(*r));
 	r->type = Node_val;
 	r->valref = 1;

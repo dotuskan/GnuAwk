@@ -570,8 +570,6 @@ cleanup:
 		case Op_K_delete:
 		{
 			char *array;
-			extern NODE *watched;
-
 			t1 = pp_pop();
 			array = t1->pp_str;
 			if (pc->expr_count > 0) {
@@ -581,7 +579,6 @@ cleanup:
 				efree(sub);
 			} else
 				fprintf(prof_fp, "%s %s", op2str(Op_K_delete), array);
-
 			if ((flags & IN_FOR_HEADER) == 0)
 				pc = end_line(pc);
 			pp_free(t1);
