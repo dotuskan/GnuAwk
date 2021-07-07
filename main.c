@@ -234,6 +234,7 @@ main(int argc, char **argv)
 #ifdef HAVE_MCHECK_H
 #ifdef HAVE_MTRACE
 	if (do_tidy_mem)
+		fprintf(stderr, "TIDYMEM ON!\n"),
 		mtrace();
 #endif /* HAVE_MTRACE */
 #endif /* HAVE_MCHECK_H */
@@ -540,6 +541,7 @@ main(int argc, char **argv)
 #endif
 
 	if (do_tidy_mem)
+		fprintf(stderr, "RELEASING ALL VARS!\n"),
 		release_all_vars();
 
 	/* keep valgrind happier */

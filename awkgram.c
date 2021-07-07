@@ -79,7 +79,7 @@
 #define signed /**/
 #endif
 
-NODE *watched = 0;
+NODE *watched = NULL;
 
 static void yyerror(const char *m, ...) ATTRIBUTE_PRINTF_1;
 static void error_ln(int line, const char *m, ...) ATTRIBUTE_PRINTF_2;
@@ -6125,7 +6125,7 @@ yylex(void)
 	thisline = NULL;
 
 collect_regexp:
-	if (trace) fprintf(stderr, "want_regexp = %s\n", want_regexp ? "true" : "false");
+//	if (trace) fprintf(stderr, "want_regexp = %s\n", want_regexp ? "true" : "false");
 	if (want_regexp) {
 		int in_brack = 0;	/* count brackets, [[:alnum:]] allowed */
 		int b_index = -1;
@@ -6235,7 +6235,7 @@ retry:
 
 	/* skipping \r is a hack, but windows is just too pervasive. sigh. */
 	while ((c = nextc(true)) == ' ' || c == '\t' || c == '\r') {
-		if (trace) fprintf(stderr, "skipping whitespace '%c'\n", c);
+//		if (trace) fprintf(stderr, "skipping whitespace '%c'\n", c);
 		continue;
 	}
 
@@ -6243,22 +6243,22 @@ retry:
 	thisline = NULL;
 	tok = tokstart;
 
-	if (trace) fprintf(stderr, "examining '%c'\n", c);
+//	if (trace) fprintf(stderr, "examining '%c'\n", c);
 
 	if (gawk_mb_cur_max == 1 || nextc_is_1stbyte)
 	switch (c) {
 	case END_SRC:
-		if (trace) fprintf(stderr, "return END_SRC\n");
+//		if (trace) fprintf(stderr, "return END_SRC\n");
 		return 0;
 
 	case END_FILE:
-		if (trace) fprintf(stderr, "return NEWLINE_EOF\n");
+//		if (trace) fprintf(stderr, "return NEWLINE_EOF\n");
 		trace = false;
 		return lasttok = NEWLINE_EOF;
 
 	case '\n':
 		sourceline++;
-		if (trace) fprintf(stderr, "return NEWLINE\n");
+//		if (trace) fprintf(stderr, "return NEWLINE\n");
 		trace = false;
 		return lasttok = NEWLINE;
 
@@ -6280,21 +6280,21 @@ retry:
 
 			if (c == END_FILE) {
 				pushback();
-				if (trace) fprintf(stderr, "return NEWLINE\n");
+//				if (trace) fprintf(stderr, "return NEWLINE\n");
 				trace = false;
 				return lasttok = NEWLINE;
 			}
 		} else {
 			while ((c = nextc(false)) != '\n') {
 				if (c == END_FILE) {
-					if (trace) fprintf(stderr, "return NEWLINE\n");
+//					if (trace) fprintf(stderr, "return NEWLINE\n");
 					trace = false;
 					return lasttok = NEWLINE_EOF;
 				}
 			}
 		}
 		sourceline++;
-		if (trace) fprintf(stderr, "return NEWLINE\n");
+//		if (trace) fprintf(stderr, "return NEWLINE\n");
 		trace = false;
 		return lasttok = NEWLINE;
 
@@ -6307,7 +6307,7 @@ retry:
 		}
 		pushback();
 		at_seen = true;
-		if (trace) fprintf(stderr, "return '@'\n");
+//		if (trace) fprintf(stderr, "return '@'\n");
 		return lasttok = '@';
 
 	case '\\':
@@ -6354,7 +6354,7 @@ retry:
 			goto retry;
 		} else {
 			yyerror(_("backslash not last character on line"));
-			if (trace) fprintf(stderr, "return LEX_EOF\n");
+//			if (trace) fprintf(stderr, "return LEX_EOF\n");
 			return lasttok = LEX_EOF;
 		}
 		break;
@@ -6373,7 +6373,7 @@ retry:
 			if (c == ':')
 				qm_col_count--;
 		}
-		if (trace) fprintf(stderr, "return '%c'\n", c);
+//		if (trace) fprintf(stderr, "return '%c'\n", c);
 		return lasttok = c;
 
 		/*
@@ -6382,16 +6382,16 @@ retry:
 		 */
 	case ')':
 		in_parens--;
-		if (trace) fprintf(stderr, "return '%c'\n", c);
+//		if (trace) fprintf(stderr, "return '%c'\n", c);
 		return lasttok = c;
 
 	case '(':
 		in_parens++;
-		if (trace) fprintf(stderr, "return '%c'\n", c);
+//		if (trace) fprintf(stderr, "return '%c'\n", c);
 		return lasttok = c;
 	case '$':
 		yylval = GET_INSTRUCTION(Op_field_spec);
-		if (trace) fprintf(stderr, "return '%c'\n", c);
+//		if (trace) fprintf(stderr, "return '%c'\n", c);
 		return lasttok = c;
 	case '{':
 		if (++in_braces == 1)
@@ -6401,7 +6401,7 @@ retry:
 		/* fall through */
 	case ',':
 	case '[':
-		if (trace) fprintf(stderr, "return '%c'\n", c);
+//		if (trace) fprintf(stderr, "return '%c'\n", c);
 		return lasttok = c;
 	case ']':
 		c = nextc(true);
@@ -6417,18 +6417,18 @@ retry:
 			yylval = GET_INSTRUCTION(Op_subscript);
 			lasttok = SUBSCRIPT;	/* end of subscripts */
 		}
-		if (trace) fprintf(stderr, "return ']'\n");
+//		if (trace) fprintf(stderr, "return ']'\n");
 		return ']';
 
 	case '*':
 		if ((c = nextc(true)) == '=') {
 			yylval = GET_INSTRUCTION(Op_assign_times);
-			if (trace) fprintf(stderr, "return ASSIGNOP\n");
+//			if (trace) fprintf(stderr, "return ASSIGNOP\n");
 			return lasttok = ASSIGNOP;
 		} else if (do_posix) {
 			pushback();
 			yylval = GET_INSTRUCTION(Op_times);
-			if (trace) fprintf(stderr, "return '*'\n");
+//			if (trace) fprintf(stderr, "return '*'\n");
 			return lasttok = '*';
 		} else if (c == '*') {
 			/* make ** and **= aliases for ^ and ^= */
@@ -6443,7 +6443,7 @@ retry:
 						lintwarn(_("operator `%s' is not supported in old awk"), "**=");
 				}
 				yylval = GET_INSTRUCTION(Op_assign_exp);
-				if (trace) fprintf(stderr, "return ASSIGNOP\n");
+//				if (trace) fprintf(stderr, "return ASSIGNOP\n");
 				return ASSIGNOP;
 			} else {
 				pushback();
@@ -6455,35 +6455,35 @@ retry:
 						lintwarn(_("operator `%s' is not supported in old awk"), "**");
 				}
 				yylval = GET_INSTRUCTION(Op_exp);
-				if (trace) fprintf(stderr, "return '^'\n");
+//				if (trace) fprintf(stderr, "return '^'\n");
 				return lasttok = '^';
 			}
 		}
 		pushback();
 		yylval = GET_INSTRUCTION(Op_times);
-		if (trace) fprintf(stderr, "return '*' 2\n");
+//		if (trace) fprintf(stderr, "return '*' 2\n");
 		return lasttok = '*';
 
 	case '/':
 		if (nextc(false) == '=') {
 			pushback();
-			if (trace) fprintf(stderr, "return SLASH_BEFORE_EQUAL\n");
+//			if (trace) fprintf(stderr, "return SLASH_BEFORE_EQUAL\n");
 			return lasttok = SLASH_BEFORE_EQUAL;
 		}
 		pushback();
 		yylval = GET_INSTRUCTION(Op_quotient);
-		if (trace) fprintf(stderr, "return '/'\n");
+//		if (trace) fprintf(stderr, "return '/'\n");
 		return lasttok = '/';
 
 	case '%':
 		if (nextc(true) == '=') {
 			yylval = GET_INSTRUCTION(Op_assign_mod);
-			if (trace) fprintf(stderr, "return ASSIGNOP\n");
+//			if (trace) fprintf(stderr, "return ASSIGNOP\n");
 			return lasttok = ASSIGNOP;
 		}
 		pushback();
 		yylval = GET_INSTRUCTION(Op_mod);
-		if (trace) fprintf(stderr, "return '%%'\n");
+//		if (trace) fprintf(stderr, "return '%%'\n");
 		return lasttok = '%';
 
 	case '^':
@@ -6496,7 +6496,7 @@ retry:
 				lintwarn(_("operator `%s' is not supported in old awk"), "^=");
 			}
 			yylval = GET_INSTRUCTION(Op_assign_exp);
-			if (trace) fprintf(stderr, "return ASSIGNOP\n");
+//			if (trace) fprintf(stderr, "return ASSIGNOP\n");
 			return lasttok = ASSIGNOP;
 		}
 		pushback();
@@ -6505,7 +6505,7 @@ retry:
 			lintwarn(_("operator `%s' is not supported in old awk"), "^");
 		}
 		yylval = GET_INSTRUCTION(Op_exp);
-		if (trace) fprintf(stderr, "return '^'\n");
+//		if (trace) fprintf(stderr, "return '^'\n");
 		return lasttok = '^';
 	}
 
@@ -6516,61 +6516,61 @@ retry:
 		}
 		if (c == '+') {
 			yylval = GET_INSTRUCTION(Op_symbol);
-			if (trace) fprintf(stderr, "return INCREMENT\n");
+//			if (trace) fprintf(stderr, "return INCREMENT\n");
 			return lasttok = INCREMENT;
 		}
 		pushback();
 		yylval = GET_INSTRUCTION(Op_plus);
-		if (trace) fprintf(stderr, "return '+'\n");
+//		if (trace) fprintf(stderr, "return '+'\n");
 		return lasttok = '+';
 
 	case '!':
 		if ((c = nextc(true)) == '=') {
 			yylval = GET_INSTRUCTION(Op_notequal);
-			if (trace) fprintf(stderr, "return RELOP\n");
+//			if (trace) fprintf(stderr, "return RELOP\n");
 			return lasttok = RELOP;
 		}
 		if (c == '~') {
 			yylval = GET_INSTRUCTION(Op_nomatch);
-			if (trace) fprintf(stderr, "return MATCHOP\n");
+//			if (trace) fprintf(stderr, "return MATCHOP\n");
 			return lasttok = MATCHOP;
 		}
 		pushback();
 		yylval = GET_INSTRUCTION(Op_symbol);
-		if (trace) fprintf(stderr, "return '!'\n");
+//		if (trace) fprintf(stderr, "return '!'\n");
 		return lasttok = '!';
 
 	case '<':
 		if (nextc(true) == '=') {
 			yylval = GET_INSTRUCTION(Op_leq);
-			if (trace) fprintf(stderr, "return RELOP\n");
+//			if (trace) fprintf(stderr, "return RELOP\n");
 			return lasttok = RELOP;
 		}
 		yylval = GET_INSTRUCTION(Op_less);
 		pushback();
-		if (trace) fprintf(stderr, "return '<'\n");
+//		if (trace) fprintf(stderr, "return '<'\n");
 		return lasttok = '<';
 
 	case '=':
 		if (nextc(true) == '=') {
 			yylval = GET_INSTRUCTION(Op_equal);
-			if (trace) fprintf(stderr, "return RELOP\n");
+//			if (trace) fprintf(stderr, "return RELOP\n");
 			return lasttok = RELOP;
 		}
 		yylval = GET_INSTRUCTION(Op_assign);
 		pushback();
-		if (trace) fprintf(stderr, "return ASSIGN\n");
+//		if (trace) fprintf(stderr, "return ASSIGN\n");
 		return lasttok = ASSIGN;
 
 	case '>':
 		if ((c = nextc(true)) == '=') {
 			yylval = GET_INSTRUCTION(Op_geq);
-			if (trace) fprintf(stderr, "return RELOP\n");
+//			if (trace) fprintf(stderr, "return RELOP\n");
 			return lasttok = RELOP;
 		} else if (c == '>') {
 			yylval = GET_INSTRUCTION(Op_symbol);
 			yylval->redir_type = redirect_append;
-			if (trace) fprintf(stderr, "return IO_OUT\n");
+//			if (trace) fprintf(stderr, "return IO_OUT\n");
 			return lasttok = IO_OUT;
 		}
 		pushback();
@@ -6580,12 +6580,12 @@ retry:
 			return lasttok = IO_OUT;
 		}
 		yylval = GET_INSTRUCTION(Op_greater);
-		if (trace) fprintf(stderr, "return '>'\n");
+//		if (trace) fprintf(stderr, "return '>'\n");
 		return lasttok = '>';
 
 	case '~':
 		yylval = GET_INSTRUCTION(Op_match);
-		if (trace) fprintf(stderr, "return MATCHOP\n");
+//		if (trace) fprintf(stderr, "return MATCHOP\n");
 		return lasttok = MATCHOP;
 
 	case '}':
@@ -6601,7 +6601,7 @@ retry:
 		}
 		did_newline = true;
 		--lexptr;	/* pick up } next time */
-		if (trace) fprintf(stderr, "return NEWLINE\n");
+//		if (trace) fprintf(stderr, "return NEWLINE\n");
 		trace = false;
 		return lasttok = NEWLINE;
 
@@ -6645,7 +6645,7 @@ retry:
 		yylval = GET_INSTRUCTION(Op_token);
 		if (want_source) {
 			yylval->lextok = estrdup(tokstart, tok - tokstart);
-			if (trace) fprintf(stderr, "return FILENAME\n");
+//			if (trace) fprintf(stderr, "return FILENAME\n");
 			return lasttok = FILENAME;
 		}
 
@@ -6658,36 +6658,36 @@ retry:
 			if (do_intl)
 				dumpintlstr(yylval->memory->stptr, yylval->memory->stlen);
 		}
-		if (trace) fprintf(stderr, "return YSTRING\n");
+//		if (trace) fprintf(stderr, "return YSTRING\n");
 		return lasttok = YSTRING;
 
 	case '-':
 		if ((c = nextc(true)) == '=') {
 			yylval = GET_INSTRUCTION(Op_assign_minus);
-			if (trace) fprintf(stderr, "return ASSIGNOP\n");
+//			if (trace) fprintf(stderr, "return ASSIGNOP\n");
 			return lasttok = ASSIGNOP;
 		}
 		if (c == '-') {
 			yylval = GET_INSTRUCTION(Op_symbol);
-			if (trace) fprintf(stderr, "return DECREMENT\n");
+//			if (trace) fprintf(stderr, "return DECREMENT\n");
 			return lasttok = DECREMENT;
 		}
 		pushback();
 		yylval = GET_INSTRUCTION(Op_minus);
-		if (trace) fprintf(stderr, "return '-'\n");
+//		if (trace) fprintf(stderr, "return '-'\n");
 		return lasttok = '-';
 
 	case '.':
-		if (trace) fprintf(stderr, "saw a dot '%c'\n", c);
+//		if (trace) fprintf(stderr, "saw a dot '%c'\n", c);
 		c = nextc(true);
-		if (trace) fprintf(stderr, "and just got '%c'\n", c);
+//		if (trace) fprintf(stderr, "and just got '%c'\n", c);
 		pushback();
 		if (! isdigit(c)) {
-			if (trace) fprintf(stderr, "returning '.'\n");
+//			if (trace) fprintf(stderr, "returning '.'\n");
 			return lasttok = '.';
 		} else
 			c = '.';
-		if (trace) fprintf(stderr, "falling through\n");
+//		if (trace) fprintf(stderr, "falling through\n");
 		/* FALL THROUGH */
 	case '0':
 	case '1':
@@ -6699,7 +6699,7 @@ retry:
 	case '7':
 	case '8':
 	case '9':
-		if (trace) fprintf(stderr, "processing number '%c'\n", c);
+//		if (trace) fprintf(stderr, "processing number '%c'\n", c);
 		/* It's a number */
 		for (;;) {
 			bool gotnumber = false;
@@ -6788,12 +6788,12 @@ retry:
 			if (gotnumber)
 				break;
 			c = nextc(true);
-			if (trace) fprintf(stderr, "2 processing number '%c'\n", c);
+//			if (trace) fprintf(stderr, "2 processing number '%c'\n", c);
 		}
 		pushback();
 
 		tokadd('\0');
-		if (trace) fprintf(stderr, "got number '%s'\n", tokstart);
+//		if (trace) fprintf(stderr, "got number '%s'\n", tokstart);
 		yylval = GET_INSTRUCTION(Op_push_i);
 
 		base = 10;
@@ -6832,11 +6832,11 @@ retry:
 			d = nondec2awknum(tokstart, strlen(tokstart)-1, NULL);
 		else
 			d = atof(tokstart);
-		if (trace) fprintf(stderr, "got number %g\n", d);
+//		if (trace) fprintf(stderr, "got number %g\n", d);
 		yylval->memory = set_profile_text(make_number(d), tokstart, strlen(tokstart) - 1);
 		if (d <= INT32_MAX && d >= INT32_MIN && d == (int32_t) d)
 			yylval->memory->flags |= NUMINT;
-		if (trace) fprintf(stderr, "return YNUMBER\n");
+//		if (trace) fprintf(stderr, "return YNUMBER\n");
 		return lasttok = YNUMBER;
 
 	case '&':
@@ -6846,12 +6846,12 @@ retry:
 			allow_newline(& new_comment);
 			yylval->comment = new_comment;
 
-			if (trace) fprintf(stderr, "return LEX_AND\n");
+//			if (trace) fprintf(stderr, "return LEX_AND\n");
 			return lasttok = LEX_AND;
 		}
 		pushback();
 		yylval = GET_INSTRUCTION(Op_symbol);
-		if (trace) fprintf(stderr, "return '&'\n");
+//		if (trace) fprintf(stderr, "return '&'\n");
 		return lasttok = '&';
 
 	case '|':
@@ -6861,13 +6861,13 @@ retry:
 			allow_newline(& new_comment);
 			yylval->comment = new_comment;
 
-			if (trace) fprintf(stderr, "return LEX_AND\n");
+//			if (trace) fprintf(stderr, "return LEX_AND\n");
 			return lasttok = LEX_OR;
 		} else if (! do_traditional && c == '&') {
 			yylval = GET_INSTRUCTION(Op_symbol);
 			yylval->redir_type = redirect_twoway;
-			if (trace) fprintf(stderr, "return %s\n",
-				 in_print && in_parens == 0 ? "IO_OUT" : "IO_IN");
+//			if (trace) fprintf(stderr, "return %s\n",
+//				 in_print && in_parens == 0 ? "IO_OUT" : "IO_IN");
 
 			return lasttok = (in_print && in_parens == 0 ? IO_OUT : IO_IN);
 		}
@@ -6875,19 +6875,19 @@ retry:
 		if (in_print && in_parens == 0) {
 			yylval = GET_INSTRUCTION(Op_symbol);
 			yylval->redir_type = redirect_pipe;
-			if (trace) fprintf(stderr, "return IO_OUT\n");
+//			if (trace) fprintf(stderr, "return IO_OUT\n");
 			return lasttok = IO_OUT;
 		} else {
 			yylval = GET_INSTRUCTION(Op_symbol);
 			yylval->redir_type = redirect_pipein;
-			if (trace) fprintf(stderr, "return IO_IN\n");
+//			if (trace) fprintf(stderr, "return IO_IN\n");
 			return lasttok = IO_IN;
 		}
 	}
 
 	if (! is_letter(c)) {
 		yyerror(_("invalid char '%c' in expression"), c);
-		if (trace) fprintf(stderr, "return LEX_EOF\n");
+//		if (trace) fprintf(stderr, "return LEX_EOF\n");
 		return lasttok = LEX_EOF;
 	}
 
@@ -6917,7 +6917,7 @@ retry:
 	/* it's some type of name-type-thing.  Find its length. */
 	tok = tokstart;
 	while (c != END_FILE && is_identchar(c)) {
-		if (trace) fprintf(stderr, "2 examining '%c'\n", c);
+//		if (trace) fprintf(stderr, "2 examining '%c'\n", c);
 		tokadd(c);
 		c = nextc(true);
 
@@ -6936,7 +6936,7 @@ retry:
 	tokadd('\0');
 	pushback();
 
-	if (trace) fprintf(stderr, "looking at a name: %s\n", tokstart);
+//	if (trace) fprintf(stderr, "looking at a name: %s\n", tokstart);
 
 	(void) validate_qualified_name(tokstart);
 
@@ -7022,7 +7022,7 @@ retry:
 			tokkey[0] = '@';
 			memcpy(tokkey + 1, tokstart, tok - tokstart);
 			yylval = GET_INSTRUCTION(Op_token);
-			if (trace) fprintf(stderr, "setting lextok: %s\n", tokkey);
+//			if (trace) fprintf(stderr, "setting lextok: %s\n", tokkey);
 			yylval->lextok = tokkey;
 			break;
 
