@@ -46,7 +46,7 @@ static mpfr_prec_t default_prec;
 
 static mpfr_rnd_t get_rnd_mode(const char rmode);
 static NODE *mpg_force_number(NODE *n);
-static NODE *mpg_make_number(double);
+static NODE *mpg_make_number(double x, const char *file, int line, const char *func);
 static NODE *mpg_format_val(const char *format, int index, NODE *s);
 static int mpg_interpret(INSTRUCTION **cp);
 
@@ -125,7 +125,7 @@ mpg_node(unsigned int flags)
  */
 
 static NODE *
-mpg_make_number(double x)
+mpg_make_number(double x, const char *file, int line, const char *func)
 {
 	NODE *r;
 	double ival;

@@ -27,11 +27,11 @@
 #include "awk.h"
 #include "floatmagic.h"	/* definition of isnan */
 
-static NODE *r_make_number(double x);
+static NODE *r_make_number(double x, const char *file, int line, const char *func);
 static AWKNUM get_ieee_magic_val(char *val);
 extern NODE **fmt_list;          /* declared in eval.c */
 
-NODE *(*make_number)(double) = r_make_number;
+NODE *(*make_number)(double, const char *, int, const char *) = r_make_number;
 NODE *(*str2number)(NODE *) = r_force_number;
 NODE *(*format_val)(const char *, int, NODE *) = r_format_val;
 int (*cmp_numbers)(const NODE *, const NODE *) = cmp_awknums;
@@ -357,12 +357,13 @@ r_dupnode(NODE *n)
 /* r_make_number --- allocate a node with defined number */
 
 static NODE *
-r_make_number(double x)
+r_make_number(double x, const char *file, int line, const char *func)
 {
 	NODE *r = make_number_node(0);
 	r->numbr = x;
-	if (watched && r == watched) fprintf(stderr, "clobbering %#p with %g\n",
-			watched, x);
+	if (watched && r == watched)
+		fprintf(stderr, "%s:%d:%s: clobbering %#p with %g\n",
+				file, line, func, watched, x);
 	return r;
 }
 

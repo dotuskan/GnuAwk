@@ -346,11 +346,13 @@ pprint(INSTRUCTION *startp, INSTRUCTION *endp, int flags)
 			if (pc->initval != NULL)
 				pp_push(Op_push_i, pp_node(pc->initval), CAN_FREE, pc->comment);
 			/* fall through */
+		case Op_push_array:
+			if (watched && pc->memory == watched)
+				fprintf(stderr, "%s:%d: memory: %#p, ref_count = %d\n", __FILE__, __LINE__, pc->memory, pc->memory->valref);
 		case Op_store_sub:
 		case Op_assign_concat:
 		case Op_push_lhs:
 		case Op_push_param:
-		case Op_push_array:
 		case Op_push:
 		case Op_push_arg:
 		case Op_push_arg_untyped:
@@ -568,6 +570,8 @@ cleanup:
 		case Op_K_delete:
 		{
 			char *array;
+			extern NODE *watched;
+
 			t1 = pp_pop();
 			array = t1->pp_str;
 			if (pc->expr_count > 0) {
@@ -577,6 +581,7 @@ cleanup:
 				efree(sub);
 			} else
 				fprintf(prof_fp, "%s %s", op2str(Op_K_delete), array);
+
 			if ((flags & IN_FOR_HEADER) == 0)
 				pc = end_line(pc);
 			pp_free(t1);

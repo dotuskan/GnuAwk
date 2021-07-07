@@ -1126,10 +1126,11 @@ extern int sourceline;
 extern char *source;
 extern int errcount;
 extern int (*interpret)(INSTRUCTION *);	/* interpreter routine */
-extern NODE *(*make_number)(double);	/* double instead of AWKNUM on purpose */
+extern NODE *(*make_number)(double, const char *file, int line, const char *func);	/* double instead of AWKNUM on purpose */
 extern NODE *(*str2number)(NODE *);
 extern NODE *(*format_val)(const char *, int, NODE *);
 extern int (*cmp_numbers)(const NODE *, const NODE *);
+#define make_number(v) make_number(v, __FILE__, __LINE__, __func__)
 
 /* built-in array types */
 extern const array_funcs_t str_array_func;
@@ -1265,14 +1266,23 @@ extern STACK_ITEM *stack_top;
  * When in doubt, use dupnode.
  */
 
-#define UPREF(r)	(void) ((watched && r == watched ? fprintf(stderr, "++ increment\n") : 0), (r)->valref++)
+static inline void
+UPREF_real(NODE *r, const char *file, int line, const char *func)
+{
+	if (watched && r == watched)
+		fprintf(stderr, "%s:%d:%s: increment 1\n", file, line, func);
+	r->valref++;
+}
+#define UPREF(r) UPREF_real((r), __FILE__, __LINE__, __func__)
 
 extern void r_unref(NODE *tmp);
 
 static inline void
-DEREF(NODE *r)
+DEREF_real(NODE *r, const char *file, int line, const char *func)
 {
 	if (watched && r == watched) fprintf(stderr, "--decrement\n");
+	if (watched && r == watched)
+		fprintf(stderr, "%s:%d:%s: decrement 1\n", file, line, func);
 	assert(r->valref > 0);
 #ifndef GAWKDEBUG
 	if (--r->valref > 0)
@@ -1280,6 +1290,7 @@ DEREF(NODE *r)
 #endif
 	r_unref(r);
 }
+#define DEREF(r) DEREF_real((r), __FILE__, __LINE__, __func__)
 
 #define POP_NUMBER() force_number(POP_SCALAR())
 #define TOP_NUMBER() force_number(TOP_SCALAR())
@@ -1889,15 +1900,17 @@ in_array(NODE *a, NODE *s)
 /* dupnode --- up the reference on a node */
 
 static inline NODE *
-dupnode(NODE *n)
+dupnode_real(NODE *n, const char *file, int line, const char *func)
 {
 	if ((n->flags & MALLOC) != 0) {
-		if (watched && n == watched) fprintf(stderr, "++ 2 increment\n");
+		if (watched && n == watched)
+			fprintf(stderr, "%s:%d:%s: increment 2\n", file, line, func);
 		n->valref++;
 		return n;
 	}
 	return r_dupnode(n);
 }
+#define dupnode(r) dupnode_real((r), __FILE__, __LINE__, __func__)
 #endif
 
 /*
@@ -1938,13 +1951,15 @@ force_string_fmt(NODE *s, const char *fmtstr, int fmtidx)
 /* unref --- decrease the reference count and/or free a node */
 
 static inline void
-unref(NODE *r)
+unref_real(NODE *r, const char *file, int line, const char *func)
 {
-	if (watched && r == watched) fprintf(stderr, "-- 2 increment\n");
+	if (watched && r == watched)
+		fprintf(stderr, "%s:%d:%s: decrement 2\n", file, line, func);
 	assert(r == NULL || r->valref > 0);
 	if (r != NULL && --r->valref <= 0)
 		r_unref(r);
 }
+#define unref(r) unref_real((r), __FILE__, __LINE__, __func__)
 
 /* force_number --- force a  node to have a numeric value */
 

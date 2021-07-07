@@ -1242,10 +1242,9 @@ regular_print:
 		if (trace) {
 			watched = $2->memory;
 			fprintf(stderr, "ref_count = %d\n", watched->valref);
+			print_instruction((INSTRUCTION *) $2, fprintf, stderr, true);
+			fprintf(stderr, "\t-- memory = %#p, watched = %#p\n", $2->memory, watched);
 		}
-		if (trace) print_instruction((INSTRUCTION *) $2,
-			fprintf, stderr, true);
-		if (trace) fprintf(stderr, "\t-- memory = %#p\n", $2->memory);
 
 		if (! do_posix && ! do_traditional) {
 			if ($2->memory == symbol_table)
@@ -4579,7 +4578,7 @@ make_instruction:
 		if (trace) fprintf(stderr, "return %s\n", op);
 		return lasttok = class;
 	}
-	if (trace) fprintf(stderr, "%s is not a known token\n", tokstart);
+//	if (trace) fprintf(stderr, "%s is not a known token\n", tokstart);
 out:
 	if (want_param_names == FUNC_HEADER)
 		tokkey = estrdup(tokstart, tok - tokstart - 1);
