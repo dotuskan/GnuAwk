@@ -2083,16 +2083,24 @@ make_number_node(unsigned int flags)
 /* assoc_set -- set an element in an array. Does unref(sub)! */
 
 static inline void
-assoc_set(NODE *array, NODE *sub, NODE *value)
+assoc_set_real(NODE *array, NODE *sub, NODE *value,
+	const char *file, int line, const char *func)
 {
 
 	NODE **lhs = assoc_lookup(array, sub);
+	if (*lhs == watched)
+		fprintf(stderr, "assoc_set 1: called from %s:%d:%s\n",
+				file, line, func);
 	unref(*lhs);
 	*lhs = value;
 	if (array->astore != NULL)
 		(*array->astore)(array, sub);
+	if (sub == watched)
+		fprintf(stderr, "assoc_set 1: called from %s:%d:%s\n",
+				file, line, func);
 	unref(sub);
 }
+#define assoc_set(a, s, v) assoc_set_real(a, s, v, __FILE__, __LINE__, __func__)
 
 /*
  * str_terminate_f, str_terminate, str_restore: function and macros to
