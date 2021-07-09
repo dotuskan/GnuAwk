@@ -400,7 +400,9 @@ NODE *
 make_str_node(const char *s, size_t len, int flags)
 {
 	NODE *r;
+
 	getnode(r);
+	memset(r, '\0', sizeof(*r));
 	r->type = Node_val;
 	r->numbr = 0;
 	r->flags = (MALLOC|STRING|STRCUR);
