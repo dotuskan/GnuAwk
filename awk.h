@@ -1285,7 +1285,7 @@ UPREF_real(NODE *r, const char *file, int line, const char *func)
 }
 #define UPREF(r) UPREF_real((r), __FILE__, __LINE__, __func__)
 
-extern void r_unref(NODE *tmp);
+extern void r_unref(NODE *tmp, const char *file, int line, const char *func);
 
 static inline void
 DEREF_real(NODE *r, const char *file, int line, const char *func)
@@ -1297,7 +1297,7 @@ DEREF_real(NODE *r, const char *file, int line, const char *func)
 	if (--r->valref > 0)
 		return;
 #endif
-	r_unref(r);
+	r_unref(r, file, line, func);
 }
 #define DEREF(r) DEREF_real((r), __FILE__, __LINE__, __func__)
 
@@ -1966,7 +1966,7 @@ unref_real(NODE *r, const char *file, int line, const char *func)
 		fprintf(stderr, "%s:%d:%s: decrement 2\n", file, line, func);
 	assert(r == NULL || r->valref > 0);
 	if (r != NULL && --r->valref <= 0)
-		r_unref(r);
+		r_unref(r, file, line, func);
 }
 #define unref(r) unref_real((r), __FILE__, __LINE__, __func__)
 
@@ -2101,14 +2101,14 @@ assoc_set_real(NODE *array, NODE *sub, NODE *value,
 	if (*lhs == watched)
 		fprintf(stderr, "assoc_set 1: called from %s:%d:%s\n",
 				file, line, func);
-	unref(*lhs);
+	unref_real(*lhs, file, line, func);
 	*lhs = value;
 	if (array->astore != NULL)
 		(*array->astore)(array, sub);
 	if (sub == watched)
 		fprintf(stderr, "assoc_set 1: called from %s:%d:%s\n",
 				file, line, func);
-	unref(sub);
+	unref_real(sub, file, line, func);
 }
 #define assoc_set(a, s, v) assoc_set_real(a, s, v, __FILE__, __LINE__, __func__)
 

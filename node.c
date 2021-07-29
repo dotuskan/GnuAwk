@@ -503,8 +503,13 @@ make_typed_regex(const char *re, size_t len)
 /* unref --- remove reference to a particular node */
 
 void
-r_unref(NODE *tmp)
+r_unref(NODE *tmp, const char *file, int line, const char *func)
 {
+	extern NODE *watched;
+
+	if (tmp == watched)
+		fprintf(stderr, "r_unref, invoked from %s:%d:%s\n", file, line, func);
+
 #ifdef GAWKDEBUG
 	/* Do the same as in awk.h:unref().  */
 	assert(tmp == NULL || tmp->valref > 0);
