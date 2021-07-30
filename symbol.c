@@ -302,12 +302,18 @@ make_symbol(const char *name, NODETYPE type)
 static NODE *
 install(const char *name, NODE *parm, NODETYPE type)
 {
+	extern const char *_file;
+	extern int _line;
+	extern const char *_func;
 	NODE *r;
 	NODE *table;
 	NODE *n_name;
 	NODE *prev;
 	extern bool trace;
 	const char *table_name = "symbol_table";
+
+	if (trace) fprintf(stderr, "install from: %s:%d:%s\n", 
+			_file, _line, _func);
 
 	if (strncmp(name, "awk::", 5) == 0)
 		n_name = make_string(name + 5, strlen(name) - 5);

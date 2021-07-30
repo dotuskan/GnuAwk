@@ -35,6 +35,9 @@
 #endif
 
 NODE *watched = NULL;
+const char *_file;
+int _line;
+const char *_func;
 
 static void yyerror(const char *m, ...) ATTRIBUTE_PRINTF_1;
 static void error_ln(int line, const char *m, ...) ATTRIBUTE_PRINTF_2;
@@ -518,6 +521,7 @@ function_prologue
 
 		$1->source_file = source;
 		$1->comment = func_comment;
+		_file = __FILE__; _line = __LINE__; _func = __func__;
 		if (install_function($2->lextok, $1, $5) < 0)
 			YYABORT;
 		in_function = true;
@@ -2054,6 +2058,7 @@ direct_func_call
 		}
 
 		if (! at_seen) {
+			_file = __FILE__; _line = __LINE__; _func = __func__;
 			n = lookup($1->func_name);
 			if (n != NULL && n->type != Node_func
 			    && n->type != Node_ext_func) {
@@ -4464,6 +4469,7 @@ retry:
 				goto out;
 			case FUNC_BODY:
 				/* in body, name must be in symbol table for it to be a parameter */
+				_file = __FILE__; _line = __LINE__; _func = __func__;
 				if ((f = lookup(tokstart)) != NULL) {
 					if (f->type == Node_builtin_func)
 						break;
@@ -4976,6 +4982,7 @@ parms_shadow(INSTRUCTION *pc, bool *shadow)
 	 * about all shadowed parameters.
 	 */
 	for (i = 0; i < pcount; i++) {
+		_file = __FILE__; _line = __LINE__; _func = __func__;
 		if (lookup(fp[i].param) != NULL) {
 			warning(
 	_("function `%s': parameter `%s' shadows global variable"),
@@ -5352,6 +5359,7 @@ variable(int location, char *name, NODETYPE type)
 	if (trace) fprintf(stderr, "variable(%d, %s, %s)\n", location, name,
 			nodetype2str(type));
 
+	_file = __FILE__; _line = __LINE__; _func = __func__;
 	if ((r = lookup(name)) != NULL) {
 		if (r->type == Node_func || r->type == Node_ext_func )
 			error_ln(location, _("function `%s' called with space between name and `(',\nor used as a variable or an array"),
@@ -6989,6 +6997,7 @@ qualify_name(const char *name, size_t len)
 	if (strchr(name, ':') != NULL)	// already qualified
 		return estrdup(name, len);
 
+	_file = __FILE__; _line = __LINE__; _func = __func__;
 	NODE *p = lookup(name);
 	if (p != NULL && p->type == Node_param_list)
 		return estrdup(name, len);
