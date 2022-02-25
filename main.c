@@ -25,7 +25,7 @@
  */
 
 /* FIX THIS BEFORE EVERY RELEASE: */
-#define UPDATE_YEAR	2020
+#define UPDATE_YEAR	2021
 
 #include "awk.h"
 #include "getopt.h"
@@ -73,7 +73,8 @@ static const char *platform_name();
 
 /* These nodes store all the special variables AWK uses */
 NODE *ARGC_node, *ARGIND_node, *ARGV_node, *BINMODE_node, *CONVFMT_node;
-NODE *ENVIRON_node, *ERRNO_node, *FIELDWIDTHS_node, *FILENAME_node;
+static NODE *ENVIRON_node;
+NODE *ERRNO_node, *FIELDWIDTHS_node, *FILENAME_node;
 NODE *FNR_node, *FPAT_node, *FS_node, *IGNORECASE_node, *LINT_node;
 NODE *NF_node, *NR_node, *OFMT_node, *OFS_node, *ORS_node, *PROCINFO_node;
 NODE *RLENGTH_node, *RSTART_node, *RS_node, *RT_node, *SUBSEP_node;
@@ -220,7 +221,7 @@ main(int argc, char **argv)
 {
 	int i;
 	char *extra_stack;
-	int have_srcfile = 0;
+	bool have_srcfile = false;
 	SRCFILE *s;
 	char *cp;
 #if defined(LOCALEDEBUG)
@@ -444,7 +445,7 @@ main(int argc, char **argv)
 		if (s->stype == SRC_EXTLIB)
 			load_ext(s->fullpath);
 		else if (s->stype != SRC_INC)
-			have_srcfile++;
+			have_srcfile = true;
 	}
 
 	/* do version check after extensions are loaded to get extension info */
@@ -656,10 +657,8 @@ By default it reads standard input and writes standard output.\n\n"), fp);
 	fflush(fp);
 
 	if (ferror(fp)) {
-#ifdef __MINGW32__
-		if (errno == 0 || errno == EINVAL)
-			w32_maybe_set_errno();
-#endif
+		os_maybe_set_errno();
+
 		/* don't warn about stdout/stderr if EPIPE, but do error exit */
 		if (errno == EPIPE)
 			die_via_sigpipe();
@@ -706,10 +705,8 @@ along with this program. If not, see http://www.gnu.org/licenses/.\n");
 	fflush(stdout);
 
 	if (ferror(stdout)) {
-#ifdef __MINGW32__
-		if (errno == 0 || errno == EINVAL)
-			w32_maybe_set_errno();
-#endif
+		os_maybe_set_errno();
+
 		/* don't warn about stdout if EPIPE, but do error exit */
 		if (errno != EPIPE)
 			warning(_("error writing standard output: %s"), strerror(errno));

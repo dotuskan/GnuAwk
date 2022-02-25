@@ -1,3 +1,69 @@
+2022-02-22         Arnold D. Robbins     <arnold@skeeve.com>
+
+	Fix resource links found by Coverity. Thanks to
+	Jakub Martisko <jamartis@redhat.com> for the report.
+
+	* readfile.c (do_readfile): Close fd if text == NULL.
+
+2021-12-10         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* rwarray.c (write_number, read_number): Reformat comments a bit.
+
+2021-12-08         Andrew J. Schorr      <aschorr@telemetry-investments.com>
+
+	* rwarray.c (write_number): Since mpfr_fpif_export is experimental
+	and not available in older versions of mpfr, add an ifdef to
+	use mpfr_out_str instead.
+	(read_number): Similarly, use mpfr_inp_str instead of
+	mpfr_fpif_import.
+
+2021-11-18         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* rwarray.c: Add support for writing/reading GMP and MPFR values.
+	Rework usage of constants while we're at it and bump version
+	numbers.
+
+2021-11-07         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* rwarray0.c: Removed, it wasn't used.
+	* Makefile.am: Updated.
+
+2021-10-27         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* 5.1.1: Release tar ball made.
+
+2021-10-13         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* ordchr.c: Update copyright year.
+
+2021-09-27         Andrew J. Schorr      <aschorr@telemetry-investments.com>
+
+	* ordchr.c (do_ord): Add white space around cast.
+
+2021-09-27         Andrew J. Schorr      <aschorr@telemetry-investments.com>
+
+	* ordchr.c (do_ord): Need to cast to unsigned char to avoid returning
+	negative values.
+
+2021-09-22         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* configure.ac: Update version to 5.1.1 in preparation for release.
+
+2021-09-10         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* configure.ac: Updated for Autoconf 2.71. Removes various warnings.
+	* configh.in, configure: Regenerated.
+
+	Unrelated:
+
+	* aclocal.m4: Regenerated: Automake 1.16.4.
+
+2021-09-09         Arnold D. Robbins     <arnold@skeeve.com>
+
+	Move to Autoconf 2.71 (finally!)
+
+	* aclocal.m4, configh.in, configure: Regenerated.
+
 2021-05-05         Arnold D. Robbins     <arnold@skeeve.com>
 
 	Get `make distcheck' working again:
@@ -39,7 +105,7 @@
 
 	Miscellanious fixes from Michael Builov <mbuilov@gmail.com>.
 
-	* fts.c (fts_open): Fix memory leak: fts_sort() allocates
+	* gawkfts.c (fts_open): Fix memory leak: fts_sort() allocates
 	sp->fts_array, but it's not freed if next fts_alloc() fails.
 	(fts_build): Need to free "head" list before returning NULL
 	on failure.

@@ -1477,6 +1477,7 @@ extern bool is_identchar(int c);
 extern NODE *make_regnode(NODETYPE type, NODE *exp);
 extern bool validate_qualified_name(char *token);
 /* builtin.c */
+extern void efflush(FILE *fp, const char *from, struct redirect *rp);
 extern double double_to_int(double d);
 extern NODE *do_exp(int nargs);
 extern NODE *do_fflush(int nargs);
@@ -1526,6 +1527,8 @@ extern int strncasecmpmbs(const unsigned char *,
 			  const unsigned char *, size_t);
 extern int sanitize_exit_status(int status);
 extern void check_symtab_functab(NODE *dest, const char *fname, const char *msg);
+extern void check_exact_args(int nargs, const char *fname, int count);
+extern void check_args_min_max(int nargs, const char *fname, int min, int max);
 /* debug.c */
 extern void init_debug(void);
 extern int debug_prog(INSTRUCTION *pc);
@@ -1619,6 +1622,7 @@ extern int os_isreadable(const awk_input_buf_t *iobuf, bool *isdir);
 extern int os_is_setuid(void);
 extern int os_setbinmode(int fd, int mode);
 extern void os_restore_mode(int fd);
+extern void os_maybe_set_errno(void);
 extern size_t optimal_bufsize(int fd, struct stat *sbuf);
 extern int ispath(const char *file);
 extern int isdirpunct(int c);
