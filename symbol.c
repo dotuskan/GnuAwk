@@ -644,7 +644,7 @@ load_symbols()
 					*aptr = dupnode(untyped);
 					break;
 				default:
-					cant_happen();
+					cant_happen("unexpected node type %s", nodetype2str(r->type));
 					break;
 				}
 			}
@@ -935,7 +935,7 @@ free_bc_internal(INSTRUCTION *cp)
 			unref(m);
 		break;
 	case Op_illegal:
-		cant_happen();
+		cant_happen("unexpected opcode %s", opcode2str(cp->opcode));
 	default:
 		break;
 	}

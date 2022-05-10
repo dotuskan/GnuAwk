@@ -54,7 +54,7 @@
 @c applies to and all the info about who's publishing this edition
 
 @c These apply across the board.
-@set UPDATE-MONTH October, 2021
+@set UPDATE-MONTH April, 2022
 @set VERSION 5.1
 @set PATCHLEVEL 1
 
@@ -2085,11 +2085,11 @@ helps keep the @command{gawk} distribution down to manageable size.
 The initial collection of material, such as it is, is still available
 at @uref{ftp://ftp.freefriends.org/arnold/Awkstuff}.
 
-In the hopes of doing something more broad, I acquired the
+In the hopes of doing something broader, I acquired the
 @code{awklang.org} domain.  Late in 2017, a volunteer took on the task
 of managing it.
 
-If you have written an interesting @command{awk} program, that
+If you have written an interesting @command{awk} program that
 you would like to share with the rest of the world, please see
 @uref{http://www.awklang.org} and use the ``Contact'' link.
 
@@ -5406,7 +5406,7 @@ between @samp{0} and @samp{7}.  For example, the code for the ASCII ESC
 @item \x@var{hh}@dots{}
 The hexadecimal value @var{hh}, where @var{hh} stands for a sequence
 of hexadecimal digits (@samp{0}--@samp{9}, and either @samp{A}--@samp{F}
-or @samp{a}--@samp{f}).  A maximum of two digts are allowed after
+or @samp{a}--@samp{f}).  A maximum of two digits are allowed after
 the @samp{\x}. Any further hexadecimal digits are treated as simple
 letters or numbers.  @value{COMMONEXT}
 (The @samp{\x} escape sequence is not allowed in POSIX awk.)
@@ -9087,12 +9087,12 @@ means that you cannot use this to multiplex input from
 two or more sources.  @xref{Retrying Input} for a way to enable 
 later I/O attempts to succeed.
 
-Assigning a timeout value prevents read operations from
-blocking indefinitely. But bear in mind that there are other ways
+Assigning a timeout value prevents read operations from being
+blocked indefinitely. But bear in mind that there are other ways
 @command{gawk} can stall waiting for an input device to be ready.
 A network client can sometimes take a long time to establish
 a connection before it can start reading any data,
-or the attempt to open a FIFO special file for reading can block
+or the attempt to open a FIFO special file for reading can be blocked
 indefinitely until some other process opens it for writing.
 
 @node Retrying Input
@@ -16502,7 +16502,7 @@ confused upon encountering repeated numbers, gaps, or lines that don't
 begin with a number:
 
 @example
-@c file eg/misc/arraymax.awk
+@c file eg/misc/arrayorder.awk
 @{
     if ($1 > max)
         max = $1
@@ -16525,7 +16525,7 @@ When this program is run with the following input:
 
 @example
 @group
-@c file eg/misc/arraymax.data
+@c file eg/misc/arrayorder.data
 5  I am the Five man
 2  Who are you?  The new number two!
 4  . . . And four on the floor
@@ -16562,6 +16562,10 @@ END @{
 @}
 @end group
 @end example
+
+As mentioned, the program is simplistic. It can be easily
+confused; for example, by using negative or nonalphabetic line numbers.
+The point here is merely to demonstrate basic array usage.
 
 @node Scanning an Array
 @subsection Scanning All Elements of an Array
@@ -28974,6 +28978,17 @@ $ @kbd{gawk -f case_fold_compare.awk}
 @print{} A a B b c C D d e E F f g G H h i I J j k K l L M m
 @print{} n N O o p P Q q r R S s t T u U V v w W X x y Y z Z
 @end example
+
+@quotation NOTE
+``Under the hood,'' @command{gawk} uses the C library @code{qsort()}
+function to manage the sorting. @code{qsort()} can call itself
+recursively.  This means that when you write a comparison function,
+you should be careful to avoid the use of global variables and arrays;
+use only local variables and arrays that you declare as additional
+parameters to the comparison function.  Otherwise, you are likely to
+cause unintentional memory corruption in your global arrays and possibly
+cause @command{gawk} itself to fail.
+@end quotation
 
 @node Two-way I/O
 @section Two-Way Communications with Another Process
@@ -42669,6 +42684,12 @@ make it possible to include them:
 
 @enumerate 1
 @item
+Discuss the proposed new feature with the @command{gawk} maintainer.
+The bug list may be used for this.  Even if I don't
+wish to include your feature, be aware that you are still free to
+add it and distribute your own ``fork'' of @command{gawk}.
+
+@item
 Before building the new feature into @command{gawk} itself,
 consider writing it as an extension
 (@pxref{Dynamic Extensions}).
@@ -42732,8 +42753,10 @@ line above the line with the name and arguments of the function.
 
 @item
 Put spaces around parentheses used in control structures
-(@code{if}, @code{while}, @code{for}, @code{do}, @code{switch},
-and @code{return}).
+(@code{if}, @code{while}, @code{for}, @code{do}, and @code{switch}).
+
+@item
+Do not parenthesize the expression used with @code{return}.
 
 @item
 Do not put spaces in front of parentheses used in function calls.
@@ -42756,6 +42779,12 @@ Use comparisons against @code{NULL} and @code{'\0'} in the conditions of
 @code{if}, @code{while}, and @code{for} statements, as well as in the @code{case}s
 of @code{switch} statements, instead of just the
 plain pointer or character value.
+
+@item
+Do not, @emph{under any circumstances}, use the @samp{-1 == foo} or
+@samp{0 >= bar} style of comparison expressions.  I have known about
+it for decades, and I understand why some people like it.  Nonetheless,
+I abhor it with a passion, and code that uses it will never be accepted.
 
 @item
 Use @code{true} and @code{false} for @code{bool} values,

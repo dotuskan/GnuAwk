@@ -1,3 +1,37 @@
+2022-04-29         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in: Fix a some minor grammar issues.
+	Thanks to Alan Welsh <alan.welsh@proton.me> for the reports.
+
+	Unrelated:
+
+	* gawktexi.in (Array Example): After some whining in comp.lang.awk,
+	make the filenames clearer and add some more explanatory text.
+
+2022-04-27         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in: Fix a typo. Thanks to Alan Welsh <alan.welsh@proton.me>
+	for the report.
+	* wordlist: Updated.
+
+2022-04-20         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* texinfo.tex: Updated from GNULIB.
+
+2022-04-18         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in (Adding Code): Update coding style instructions.
+
+2022-03-01         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in: Typo fix. Thanks to Antonio Columbo for pointing
+	it out.
+
+2022-02-27         Arnold D. Robbins     <arnold@skeeve.com>
+
+	* gawktexi.in (Array Sorting Functions): Add a note to be careful
+	to use local variables in comparison functions.
+
 2022-02-07         Arnold D. Robbins     <arnold@skeeve.com>
 
 	* gawktexi.in (Indirect Calls): Expand discussion of calling

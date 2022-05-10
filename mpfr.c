@@ -496,7 +496,7 @@ mpg_update_var(NODE *n)
 		nr = FNR;
 		nq = MFNR;
 	} else
-		cant_happen();
+		cant_happen("invalid node for mpg_update_var%s", "");
 
 	if (mpz_sgn(nq) == 0) {
 		/* Efficiency hack similar to that for AWKNUM */
@@ -528,7 +528,7 @@ mpg_set_var(NODE *n)
 	else if (n == FNR_node)
 		nq = MFNR;
 	else
-		cant_happen();
+		cant_happen("invalid node for mpg_set_var%s", "");
 
 	if (is_mpg_integer(val))
 		r = val->mpg_i;
@@ -1795,8 +1795,17 @@ mod:
 			tval = mpfr_neg(r->mpg_numbr, t1->mpg_numbr, ROUND_MODE);
 			IEEE_FMT(r->mpg_numbr, tval);
 		} else {
-			r = mpg_integer();
-			mpz_neg(r->mpg_i, t1->mpg_i);
+			if (! is_zero(t1)) {
+				r = mpg_integer();
+				mpz_neg(r->mpg_i, t1->mpg_i);
+			} else {
+				// have to convert to MPFR for -0.0. sigh
+				r = mpg_float();
+				tval = mpfr_set_d(r->mpg_numbr, 0.0, ROUND_MODE);
+				IEEE_FMT(r->mpg_numbr, tval);
+				tval = mpfr_neg(r->mpg_numbr, r->mpg_numbr, ROUND_MODE);
+				IEEE_FMT(r->mpg_numbr, tval);
+			}
 		}
 		DEREF(t1);
 		REPLACE(r);
@@ -1847,7 +1856,7 @@ mod:
 			r = mpg_pow(t1, t2);
 			break;
 		default:
-			cant_happen();
+			cant_happen("unexpected opcode %s", opcode2str(op));
 		}
 
 		DEREF(t2);
